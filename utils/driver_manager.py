@@ -182,8 +182,8 @@ class DriverManager:
             user_data_dir = DriverManager._get_unique_user_data_dir()
             chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
             
-            # Add headless mode in GitHub Actions
-            if os.environ.get('GITHUB_ACTIONS') == 'true':
+            # Add headless mode if enabled in config
+            if options.get("headless"):
                 chrome_options.add_argument('--headless')
             
             # Get appropriate ChromeDriver path
