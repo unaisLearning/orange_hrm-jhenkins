@@ -143,11 +143,13 @@ class BaseTest:
             # Enable headless mode when configured or when running in CI
             if (
                 Config.HEADLESS
+                or os.environ.get('HEADLESS', '').lower() in ('1', 'true', 'yes')
                 or os.environ.get('GITHUB_ACTIONS') == 'true'
                 or os.environ.get('CI') == 'true'
                 or os.environ.get('JENKINS_HOME')
+                or os.environ.get('JENKINS_URL')
             ):
-                chrome_options.add_argument('--headless')
+                chrome_options.add_argument('--headless=new')
             
             # Get appropriate ChromeDriver path
             driver_path = self._get_chrome_driver_path()
