@@ -1,0 +1,46 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Test results and logs
+*.xml
+*.out
+*.log
+allure-results/
+screenshots/
+logs/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Jenkins build artifacts
+*.lastFailedBuild
+*.lastSuccessfulBuild
+
+# Zip and binary files
+*.zip
+*.bin
+
+# Misc
+*.bak 
