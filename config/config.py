@@ -60,15 +60,8 @@ class Config:
     REPORT_DIR = config.report_dir
     ALLURE_RESULTS_DIR = config.allure_results_dir
     BROWSER = config.browser
-    # Allow HEADLESS override via environment variable
-    HEADLESS = os.getenv("HEADLESS", str(config.headless)).lower() in ("1", "true", "yes")
-    # Determine CI mode via config or common CI environment variables
-    CI_MODE = (
-        config.ci_mode
-        or os.getenv("CI", "").lower() in ("1", "true", "yes")
-        or bool(os.getenv("JENKINS_HOME"))
-        or bool(os.getenv("JENKINS_URL"))
-    )
+    HEADLESS = config.headless
+    CI_MODE = config.ci_mode
     
     @classmethod
     def is_ci_mode(cls) -> bool:
