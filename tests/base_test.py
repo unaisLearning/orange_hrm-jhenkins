@@ -140,8 +140,13 @@ class BaseTest:
             self.user_data_dir = self._get_unique_user_data_dir()
             chrome_options.add_argument(f'--user-data-dir={self.user_data_dir}')
             
-            # Add headless mode in GitHub Actions
-            if os.environ.get('GITHUB_ACTIONS') == 'true':
+            # Enable headless mode when configured or when running in CI
+            if (
+                Config.HEADLESS
+                or os.environ.get('GITHUB_ACTIONS') == 'true'
+                or os.environ.get('CI') == 'true'
+                or os.environ.get('JENKINS_HOME')
+            ):
                 chrome_options.add_argument('--headless')
             
             # Get appropriate ChromeDriver path
