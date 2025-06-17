@@ -184,7 +184,7 @@ class DriverManager:
             
             # Add headless mode if enabled in config
             if options.get("headless"):
-                chrome_options.add_argument('--headless')
+                chrome_options.add_argument('--headless=new')
                 chrome_options.add_argument('--window-size=1920,1080')
                 chrome_options.add_argument('--disable-gpu')
                 chrome_options.add_argument('--no-sandbox')
@@ -207,12 +207,21 @@ class DriverManager:
                 try:
                     driver.quit()
                 except Exception as e:
-                    logger.warning(f"Error during driver cleanup: {str(e)}")
+                    # Logging may be shut down at interpreter exit
+                    try:
+                        logger.warning(f"Error during driver cleanup: {str(e)}")
+                    except Exception:
+                        print(f"Error during driver cleanup: {e}")
                 finally:
                     try:
                         shutil.rmtree(user_data_dir, ignore_errors=True)
                     except Exception as e:
-                        logger.warning(f"Error cleaning up user data directory: {str(e)}")
+                        try:
+                            logger.warning(
+                                f"Error cleaning up user data directory: {str(e)}"
+                            )
+                        except Exception:
+                            print(f"Error cleaning up user data directory: {e}")
             
             import atexit
             atexit.register(cleanup)
