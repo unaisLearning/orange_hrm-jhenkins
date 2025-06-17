@@ -27,29 +27,35 @@ class LoginPage(BasePage):
         self.url = Config.BASE_URL
         self.selectors = LoginPageSelectors
     
-    def navigate(self) -> None:
-        """Navigate to the login page."""
-        try:
-            logger.info(f"Navigating to {self.url}")
-            self.driver.get(self.url)
-            
-            # Wait for login form to be present
-            WebDriverWait(self.driver, Config.IMPLICIT_WAIT).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, LoginPageSelectors.USERNAME))
-            )
-            logger.info("Login page loaded successfully")
-            
-            # Check if already logged in
-            if "/dashboard/index" in self.driver.current_url:
-                logger.info("User already logged in, attempting to logout")
-                self.logout()
-                
-        except TimeoutException:
-            logger.error("Timeout waiting for login page to load")
-            raise
-        except Exception as e:
-            logger.error(f"Failed to navigate to login page: {str(e)}")
-            raise
+    def navigate(self, retries: int = 3) -> None:
+        """Navigate to the login page with simple retry logic."""
+        for attempt in range(1, retries + 1):
+            try:
+                logger.info(f"Navigating to {self.url} (attempt {attempt})")
+                self.driver.get(self.url)
+
+                # Wait for login form to be present
+                WebDriverWait(self.driver, Config.EXPLICIT_WAIT).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, LoginPageSelectors.USERNAME))
+                )
+                logger.info("Login page loaded successfully")
+
+                # Check if already logged in
+                if "/dashboard/index" in self.driver.current_url:
+                    logger.info("User already logged in, attempting to logout")
+                    self.logout()
+                return
+
+            except TimeoutException:
+                logger.warning(
+                    f"Timeout waiting for login page to load (attempt {attempt})"
+                )
+                if attempt == retries:
+                    logger.error("Timeout waiting for login page to load")
+                    raise
+            except Exception as e:
+                logger.error(f"Failed to navigate to login page: {str(e)}")
+                raise
     
     def login(self, username: str, password: str) -> None:
         """
