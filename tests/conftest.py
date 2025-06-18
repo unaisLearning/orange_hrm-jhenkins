@@ -125,4 +125,8 @@ def pytest_runtest_makereport(item, call):
                 with open(screenshot_path, 'rb') as f:
                     allure.attach(f.read(), name=item.name, attachment_type=allure.attachment_type.PNG)
             except Exception as e:
-                logging.error(f"Failed to attach screenshot to Allure: {e}") 
+                logging.error(f"Failed to attach screenshot to Allure: {e}")
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_sessionfinish(session, exitstatus):
+    logging.shutdown() 

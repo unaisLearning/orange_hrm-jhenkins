@@ -134,7 +134,7 @@ class DriverManager:
             webdriver.Remote: Configured WebDriver instance
         """
         browser_name = browser_name or Config.BROWSER.lower()
-        options = Config.get_browser_options().get(browser_name, {})
+        options = Config.get_browser_options()
 
         try:
             if browser_name == "chrome":
@@ -172,28 +172,22 @@ class DriverManager:
         try:
             chrome_options = webdriver.ChromeOptions()
             
-            # Add common Chrome options
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
-            chrome_options.add_argument("--disable-gpu")
-            chrome_options.add_argument("--disable-notifications")
+            # Debug: Log the options being used
+            logger.info(f"Browser options received: {options}")
+            logger.info(f"Headless setting: {options.get('headless')}")
+            logger.info(f"Arguments to add: {options.get('arguments', [])}")
+            
+            # Add arguments from config options
+            for arg in options.get("arguments", []):
+                chrome_options.add_argument(arg)
+                logger.info(f"Added Chrome argument: {arg}")
             
             # Create a unique user data directory for this instance
             user_data_dir = DriverManager._get_unique_user_data_dir()
             chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
             
-            # Add headless mode if enabled in config
-            if options.get("headless"):
-                chrome_options.add_argument('--headless')
-                chrome_options.add_argument('--window-size=1920,1080')
-                chrome_options.add_argument('--disable-gpu')
-                chrome_options.add_argument('--no-sandbox')
-                chrome_options.add_argument('--disable-dev-shm-usage')
-                chrome_options.add_argument('--disable-notifications')
-                chrome_options.add_argument('--disable-extensions')
-                chrome_options.add_argument('--remote-debugging-port=9222')
-                chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-                chrome_options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36')
+            # Debug: Log all final Chrome arguments
+            logger.info(f"Final Chrome options: {chrome_options.arguments}")
             
             # Get appropriate ChromeDriver path
             driver_path = DriverManager._get_chrome_driver_path()
@@ -205,14 +199,25 @@ class DriverManager:
             # Register cleanup
             def cleanup():
                 try:
-                    driver.quit()
+                    # Temporarily disable urllib3 logging to prevent "I/O operation on closed file" errors
+                    import logging
+                    urllib3_logger = logging.getLogger('urllib3.connectionpool')
+                    original_level = urllib3_logger.level
+                    urllib3_logger.setLevel(logging.CRITICAL)
+                    
+                    try:
+                        driver.quit()
+                    finally:
+                        # Restore original logging level
+                        urllib3_logger.setLevel(original_level)
                 except Exception as e:
-                    logger.warning(f"Error during driver cleanup: {str(e)}")
+                    # Use print instead of logger to avoid potential logging issues during cleanup
+                    pass
                 finally:
                     try:
                         shutil.rmtree(user_data_dir, ignore_errors=True)
                     except Exception as e:
-                        logger.warning(f"Error cleaning up user data directory: {str(e)}")
+                        pass
             
             import atexit
             atexit.register(cleanup)

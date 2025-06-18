@@ -95,15 +95,45 @@ class Config:
     @classmethod
     def get_browser_options(cls) -> Dict[str, Any]:
         """Get browser-specific options."""
-        return {
-            "chrome": {
-                "browser_name": "chrome",
-                "headless": cls.HEADLESS,
-                "window_size": (1920, 1080)
-            },
-            "firefox": {
-                "browser_name": "firefox",
-                "headless": cls.HEADLESS,
-                "window_size": (1920, 1080)
-            }
-        }.get(cls.BROWSER.lower(), {}) 
+        browser = cls.BROWSER.lower()
+        options = {
+            "browser_name": browser,
+            "headless": cls.HEADLESS,
+            "window_size": (1920, 1080),
+            "arguments": []
+        }
+        
+        print(f"Current environment: {cls.CURRENT_ENV}")
+        print(f"Headless mode is: {cls.HEADLESS}")
+        
+        if browser == "chrome":
+            if cls.HEADLESS:
+                options["arguments"].append("--headless")
+            options["arguments"].extend([
+                "--window-size=1920,1080",
+                "--disable-gpu",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-notifications",
+                "--disable-extensions",
+                "--remote-debugging-port=9222",
+                "--disable-blink-features=AutomationControlled",
+                "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36"
+            ])
+        elif browser == "firefox":
+            if cls.HEADLESS:
+                options["arguments"].append("-headless")
+            options["arguments"].append("--width=1920")
+            options["arguments"].append("--height=1080")
+        return options
+
+    @classmethod
+    def get_browser_options_for_browser(cls, browser_name: str) -> Dict[str, Any]:
+        """Get browser-specific options for a specific browser."""
+        options = Config.get_browser_options().get(browser_name, {})
+        return options
+
+    @classmethod
+    def get_browser_options_for_current_browser(cls) -> Dict[str, Any]:
+        """Get browser-specific options for the current browser."""
+        return Config.get_browser_options_for_browser(cls.BROWSER.lower()) 
