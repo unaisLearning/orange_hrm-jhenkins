@@ -86,6 +86,8 @@ class TestLogin(BaseTest):
         # Call parent teardown_method
         super().teardown_method(method)
     
+    @pytest.mark.smoke
+    @pytest.mark.critical
     @allure.story('Valid Login')
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.description("""
@@ -133,6 +135,8 @@ class TestLogin(BaseTest):
                 attachment_type=allure.attachment_type.PNG
             )
     
+    @pytest.mark.regression  
+    @pytest.mark.medium
     @allure.story('Logout')
     @allure.severity(allure.severity_level.NORMAL)
     @allure.description("""
@@ -185,7 +189,20 @@ class TestLogin(BaseTest):
                 self.driver.get_screenshot_as_png(),
                 name="logout_successful",
                 attachment_type=allure.attachment_type.PNG
-            ) 
+            )
+
+    @pytest.mark.negative
+    @pytest.mark.high
+    @allure.story('Invalid Login')
+    def test_invalid_login(self):
+        """Test login with invalid credentials."""
+        with allure.step("Enter invalid credentials"):
+            self.login_page.login("invalid", "invalid")
+        
+        with allure.step("Verify login failure"):
+            assert not self.login_page.is_login_successful()
+            error_msg = self.login_page.get_error_message()
+            assert "Invalid credentials" in error_msg or "Username" in error_msg
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionfinish(session, exitstatus):

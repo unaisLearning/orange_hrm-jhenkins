@@ -44,6 +44,13 @@ class Config:
             explicit_wait=10,
             page_load_timeout=20,
             headless=True
+        ),
+        'ci-fast': EnvironmentConfig(
+            base_url="https://opensource-demo.orangehrmlive.com",
+            headless=True,
+            implicit_wait=2,
+            explicit_wait=5,
+            page_load_timeout=10
         )
     }
     

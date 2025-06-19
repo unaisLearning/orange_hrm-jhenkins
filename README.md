@@ -1,3 +1,15 @@
+# 🚀 Enterprise Selenium Test Automation Framework
+
+## 🎯 Framework Highlights
+
+- **Page Object Model** with centralized configuration
+- **CI/CD Ready** (Jenkins + GitHub Actions)
+- **Smart Browser Management** (Headless/GUI auto-detection)
+- **Comprehensive Reporting** (Allure + Screenshots)
+- **Multi-Environment Support** (Dev/QA/Prod)
+
+## 🏗️ Architecture
+
 # Automated Testing with Jenkins CI/CD
 
 This project implements automated testing with Jenkins CI/CD pipeline.
