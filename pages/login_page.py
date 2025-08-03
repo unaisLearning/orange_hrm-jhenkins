@@ -153,4 +153,5 @@ class LoginPage(BasePage):
             
         except Exception as e:
             logger.error(f"Logout failed: {str(e)}")
-            raise 
+            raise
+        #test
