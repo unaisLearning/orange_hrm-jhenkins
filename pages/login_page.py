@@ -139,7 +139,7 @@ class LoginPage(BasePage):
         except Exception as e:
             logger.error(f"Failed to check login status: {str(e)}")
             return False
-    
+    #test
     def logout(self) -> None:
         """Logout from the application."""
         try:
